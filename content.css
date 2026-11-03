@@ -1,0 +1,32 @@
+/*
+ * YouTube Sidebar Blocker
+ * -----------------------
+ * Always on. No popup, no settings, no off switch.
+ *
+ * The entire right-hand column is removed on watch pages so there is no
+ * recommendation rail, no "Up next" list, and no empty gap where it used
+ * to be. Home, search, subscriptions, comments and the player itself are
+ * left alone.
+ */
+
+/* Remove the right-hand column and any watch-page recommendation rail. */
+html ytd-watch-flexy #secondary,
+html ytd-watch-flexy #related,
+html ytd-watch-flexy ytd-watch-next-secondary-results-renderer,
+html #watch-related {
+  display: none !important;
+}
+
+/* Let the video use the space that the sidebar used to occupy. */
+html ytd-watch-flexy[is-two-columns_] #primary {
+  max-width: 100% !important;
+}
+
+/*
+ * Keep the player from becoming awkwardly wide on very large monitors in
+ * the default (non-theater) view. Theater mode is intentionally untouched.
+ */
+html ytd-watch-flexy:not([theater]) #primary {
+  max-width: min(100%, 1280px) !important;
+  margin-inline: auto !important;
+}
