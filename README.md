@@ -1,19 +1,15 @@
-# YouTube Sidebar Blocker
+# Distraction Blocker
 
-A deliberately minimal Chrome extension that removes the right-hand sidebar from YouTube watch pages.
+A deliberately minimal Chrome extension for cutting distracting sites out of your browser.
 
 **Always on. No popup, no toggle, no badge, no settings. No mercy.**
 
-## What it does
+## What it blocks
 
-- Removes the **entire right-hand column** on YouTube video pages, including:
-  - recommended videos / "Up next"
-  - live chat
-  - the playlist panel
-  - transcript and other side panels
-- Collapses the empty column and lets the player use the freed space.
-- Leaves the home page, search results, subscriptions, comments, and the player untouched.
-- Works with YouTube's single-page navigation; no page refresh needed after the first load.
+- **Substack** — `substack.com` and every subdomain are redirected to a local block screen that says **“Substack has been blocked.”**
+- **YouTube recommendations** — the entire right-hand column is removed on video watch pages, including recommended videos, live chat, playlists, and transcripts.
+
+Home pages, search results, subscriptions, comments, and the video player on YouTube are left alone.
 
 ## Install
 
@@ -22,29 +18,41 @@ A deliberately minimal Chrome extension that removes the right-hand sidebar from
 3. Turn on **Developer mode** (top-right).
 4. Click **Load unpacked**.
 5. Select the folder containing this README.
-6. Open any YouTube video. The right-hand sidebar will not appear.
+6. Open any YouTube video, or try visiting Substack.
 
 If a YouTube tab was already open while you installed the extension, refresh that tab once.
 
-## Updating from the previous version
+## How it works
 
-The toggle and popup have been removed. On `chrome://extensions`, click the reload button on the extension card. The extension is now always active whenever it is enabled in Chrome.
+- `rules.json` contains a `declarativeNetRequest` rule that redirects Substack navigations to the extension's own `blocked.html` page. The site itself never gets a chance to render.
+- `content.css` removes the right-hand sidebar from YouTube watch pages.
+- There is no JavaScript running on blocked sites, no background worker, and no saved state.
+
+## Adding another site
+
+1. Add another rule to `rules.json`, following the Substack example. Change the `id` and the `urlFilter` (for example, `||example.com^`).
+2. Add the domain to `host_permissions` in `manifest.json`.
+3. Reload the extension on `chrome://extensions`.
+
+The current block screen names Substack specifically. To use a different site name, copy `blocked.html` and `blocked.css` or make the message generic.
 
 ## Turning it off
 
-There is no in-extension switch. To disable it, use **Remove** or the on/off switch for the extension on `chrome://extensions`. That is the only off switch.
+There is no in-extension switch. To disable it, use the on/off switch for the extension on `chrome://extensions`, or remove it entirely. That is the only off switch.
 
 ## Files
 
 | File | Purpose |
 | --- | --- |
 | `manifest.json` | Chrome extension manifest (Manifest V3) |
-| `content.css` | The selectors that remove the right sidebar |
+| `rules.json` | The site blocklist |
+| `blocked.html` / `blocked.css` | The local “Substack has been blocked” screen |
+| `content.css` | Removes YouTube's right sidebar |
 | `icons/` | Extension icons |
 
 ## Notes
 
-- The extension only matches `https://www.youtube.com/*` and `https://youtube.com/*`.
-- It requests no permissions, stores no settings, and collects no data.
+- The extension requests host access to Substack so it can intercept those navigations.
+- It collects no data and makes no external requests.
 - It does not hide the YouTube home feed, Shorts, or end-screen suggestions; its scope is the right-hand column on video pages.
-- If you edit the files, click the reload button for the extension on `chrome://extensions` and refresh any open YouTube tabs.
+- If you edit the files, click the reload button for the extension on `chrome://extensions` and refresh any open tabs.

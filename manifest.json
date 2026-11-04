@@ -1,14 +1,30 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Sidebar Blocker",
-  "short_name": "YT Sidebar Blocker",
-  "version": "1.1.0",
-  "description": "Permanently hide YouTube's right-hand sidebar on video pages. No toggle, no distractions.",
+  "name": "Distraction Blocker",
+  "short_name": "Distraction Blocker",
+  "version": "2.0.0",
+  "description": "Block distracting sites and remove YouTube's recommendation sidebar. Always on. No toggle.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": [
+    "https://substack.com/*",
+    "https://*.substack.com/*",
+    "http://substack.com/*",
+    "http://*.substack.com/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "blocklist",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
   },
   "content_scripts": [
     {
