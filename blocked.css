@@ -2,7 +2,6 @@
   color-scheme: dark;
   --bg: #09090b;
   --text: #f4f1eb;
-  --red: #ff2d4b;
   --frame: rgb(244 241 235 / 7%);
 }
 
@@ -44,15 +43,6 @@ body::before {
   text-align: center;
 }
 
-.accent {
-  display: block;
-  width: 28px;
-  height: 1px;
-  margin: 0 auto 46px;
-  background: var(--red);
-  box-shadow: 0 0 14px rgb(255 45 75 / 55%);
-}
-
 h1 {
   margin: 0 auto;
   font-family: Georgia, "Times New Roman", serif;
@@ -92,10 +82,6 @@ h1 {
 
   body::before {
     inset: 10px;
-  }
-
-  .accent {
-    margin-bottom: 32px;
   }
 
   h1 {
