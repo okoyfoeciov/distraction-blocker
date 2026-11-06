@@ -7,7 +7,7 @@ A deliberately minimal Chrome extension for cutting distracting sites out of you
 ## What it blocks
 
 - **Substack** — `substack.com` and every subdomain are redirected to a local block screen that says **“Substack has been blocked.”**
-- **Hacker News** — `news.ycombinator.com` is blocked every day from **10:00 to 21:59 local time**. Visiting it shows **“Hacker News has been blocked.”**
+- **Hacker News** — `news.ycombinator.com` is blocked every day from **10:00 to 05:59 local time**. Visiting it shows **“Hacker News has been blocked.”**
 - **YouTube recommendations** — the entire right-hand column is removed on video watch pages, including recommended videos, live chat, playlists, and transcripts.
 
 Home pages, search results, subscriptions, comments, and the video player on YouTube are left alone.
@@ -26,11 +26,11 @@ If a YouTube tab was already open while you installed the extension, refresh tha
 ## How it works
 
 - `rules.json` contains a static `declarativeNetRequest` rule that redirects Substack navigations to `blocked.html`. The site itself never gets a chance to render.
-- `background.js` maintains a dynamic `declarativeNetRequest` rule for Hacker News. A Chrome alarm wakes at 10:00 and 22:00 local time, adds or removes the rule, and schedules the next transition.
+- `background.js` maintains a dynamic `declarativeNetRequest` rule for Hacker News. A Chrome alarm wakes at 10:00 and 06:00 local time, adds or removes the rule, and schedules the next transition.
 - `content.css` removes the right-hand sidebar from YouTube watch pages.
 - There is no JavaScript running on blocked sites, and no saved state.
 
-The Hacker News schedule uses the browser's local time zone. The block window is `[10:00, 22:00)`: it is active all the way through 21:59 and turns off at 22:00. Outside that window, Hacker News loads normally.
+The Hacker News schedule uses the browser's local time zone. The block window is `[10:00, 06:00)`, wrapping past midnight: it is active from 10:00 in the morning all the way through 05:59 the next day and turns off at 06:00. Outside that window, Hacker News loads normally.
 
 ## Adding another site
 

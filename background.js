@@ -3,7 +3,7 @@
 const HACKER_NEWS_RULE_ID = 1001;
 const HACKER_NEWS_ALARM = "hacker-news-schedule";
 const BLOCK_START_HOUR = 10;
-const BLOCK_END_HOUR = 22;
+const BLOCK_END_HOUR = 6;
 
 const HACKER_NEWS_RULE = {
   id: HACKER_NEWS_RULE_ID,
@@ -21,11 +21,17 @@ const HACKER_NEWS_RULE = {
 };
 
 /**
- * The window is [10:00, 22:00) in the browser's local time zone.
+ * The window is [10:00, 06:00) in the browser's local time zone, wrapping
+ * past midnight.
  */
 function isBlockWindow(date = new Date()) {
   const hour = date.getHours();
-  return hour >= BLOCK_START_HOUR && hour < BLOCK_END_HOUR;
+
+  if (BLOCK_START_HOUR < BLOCK_END_HOUR) {
+    return hour >= BLOCK_START_HOUR && hour < BLOCK_END_HOUR;
+  }
+
+  return hour >= BLOCK_START_HOUR || hour < BLOCK_END_HOUR;
 }
 
 /**

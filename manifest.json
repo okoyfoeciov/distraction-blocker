@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Distraction Blocker",
   "short_name": "Distraction Blocker",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Block distracting sites on your schedule and remove YouTube's recommendation sidebar. No toggle.",
   "icons": {
     "16": "icons/icon16.png",
