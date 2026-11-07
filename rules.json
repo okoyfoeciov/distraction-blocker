@@ -12,5 +12,19 @@
       "urlFilter": "||substack.com^",
       "resourceTypes": ["main_frame"]
     }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "extensionPath": "/blocked-facebook.html"
+      }
+    },
+    "condition": {
+      "urlFilter": "||facebook.com^",
+      "resourceTypes": ["main_frame"]
+    }
   }
 ]

@@ -7,6 +7,7 @@ A deliberately minimal Chrome extension for cutting distracting sites out of you
 ## What it blocks
 
 - **Substack** — `substack.com` and every subdomain are redirected to a local block screen that says **“Substack has been blocked.”**
+- **Facebook** — `facebook.com` and every subdomain are redirected to a local block screen that says **“Facebook has been blocked.”**
 - **Hacker News** — `news.ycombinator.com` is blocked every day from **10:00 to 05:59 local time**. Visiting it shows **“Hacker News has been blocked.”**
 - **YouTube recommendations** — the entire right-hand column is removed on video watch pages, including recommended videos, playlists, and transcripts.
 - **YouTube live chat** — live chat messages and the composer are hidden on live streams and premieres. The separate pop-out chat window is fully blanked. In fullscreen, the chat header stays visible so its close button can collapse the chat and let the video fill the screen.
@@ -20,13 +21,13 @@ Home pages, search results, subscriptions, comments, and the video player on You
 3. Turn on **Developer mode** (top-right).
 4. Click **Load unpacked**.
 5. Select the folder containing this README.
-6. Open any YouTube video, or try visiting Substack or Hacker News.
+6. Open any YouTube video, or try visiting Substack, Facebook, or Hacker News.
 
 If a YouTube tab was already open while you installed the extension, refresh that tab once.
 
 ## How it works
 
-- `rules.json` contains a static `declarativeNetRequest` rule that redirects Substack navigations to `blocked.html`. The site itself never gets a chance to render.
+- `rules.json` contains static `declarativeNetRequest` rules that redirect Substack and Facebook navigations to local block screens. The sites themselves never get a chance to render.
 - `background.js` maintains a dynamic `declarativeNetRequest` rule for Hacker News. A Chrome alarm wakes at 10:00 and 06:00 local time, adds or removes the rule, and schedules the next transition.
 - `content.css` removes the right-hand sidebar, live chat messages, and the chat composer from YouTube, while leaving the chat header's close button reachable in fullscreen.
 - `live-chat.css` blanks the standalone pop-out chat window.
@@ -55,6 +56,7 @@ There is no in-extension switch. To disable it, use the on/off switch for the ex
 | `rules.json` | Always-on site blocklist |
 | `background.js` | Hacker News schedule and dynamic redirect rule |
 | `blocked.html` / `blocked.css` | The local “Substack has been blocked” screen |
+| `blocked-facebook.html` | The local “Facebook has been blocked” screen |
 | `blocked-hacker-news.html` | The local “Hacker News has been blocked” screen |
 | `content.css` | Removes YouTube's right sidebar, live chat messages, and chat composer |
 | `live-chat.css` | Blanks the standalone YouTube pop-out chat window |
@@ -62,7 +64,7 @@ There is no in-extension switch. To disable it, use the on/off switch for the ex
 
 ## Notes
 
-- The extension requests host access to Substack and Hacker News so it can intercept those navigations.
+- The extension requests host access to Substack, Facebook, and Hacker News so it can intercept those navigations.
 - It collects no data and makes no external requests.
 - It does not hide the YouTube home feed, Shorts, or end-screen suggestions; its scope is the right-hand column and live chat on video pages.
 - In fullscreen, YouTube may reserve space for chat even though its messages are hidden. Use the X in the chat header to close it and let the video fill the screen.
