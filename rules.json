@@ -26,5 +26,19 @@
       "urlFilter": "||facebook.com^",
       "resourceTypes": ["main_frame"]
     }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "extensionPath": "/blocked-voz.html"
+      }
+    },
+    "condition": {
+      "urlFilter": "||voz.vn^",
+      "resourceTypes": ["main_frame"]
+    }
   }
 ]
