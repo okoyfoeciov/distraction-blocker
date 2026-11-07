@@ -1,0 +1,14 @@
+/*
+ * Standalone YouTube chat windows
+ * -------------------------------
+ * The pop-out chat page at youtube.com/live_chat has no useful UI once live
+ * chat is removed, so blank it completely. This stylesheet is injected only
+ * into the top-level pop-out page, not into the chat iframe embedded in a
+ * watch page, so that iframe keeps its header and close button.
+ */
+
+html yt-live-chat-app,
+html yt-live-chat-renderer,
+html #chat-container {
+  display: none !important;
+}

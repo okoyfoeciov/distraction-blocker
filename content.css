@@ -1,12 +1,14 @@
 /*
- * YouTube Sidebar Blocker
- * -----------------------
+ * YouTube Sidebar + Live Chat Blocker
+ * -----------------------------------
  * Always on. No popup, no settings, no off switch.
  *
  * The entire right-hand column is removed on watch pages so there is no
  * recommendation rail, no "Up next" list, and no empty gap where it used
- * to be. Home, search, subscriptions, comments and the player itself are
- * left alone.
+ * to be. Live chat messages and the composer are removed, and the standalone
+ * pop-out chat window is blanked. In fullscreen the chat header is kept so
+ * its close button can collapse the empty chat panel. Home, search,
+ * subscriptions, comments and the player itself are left alone.
  */
 
 /* Remove the right-hand column and any watch-page recommendation rail. */
@@ -15,6 +17,36 @@ html ytd-watch-flexy #related,
 html ytd-watch-flexy ytd-watch-next-secondary-results-renderer,
 html #watch-related {
   display: none !important;
+}
+
+/*
+ * Remove live chat messages and the composer, but leave the chat header
+ * alone. In fullscreen YouTube can open chat beside the player and reserve
+ * space for it; the header holds the X that closes the chat, so it must
+ * stay clickable. The pop-out chat window is fully hidden in live-chat.css.
+ */
+html yt-live-chat-item-list-renderer,
+html yt-live-chat-message-input-renderer,
+html yt-live-chat-ticker-renderer,
+html yt-live-chat-pinned-message-renderer,
+html yt-live-chat-poll-renderer,
+html yt-live-chat-banner-manager-renderer,
+html yt-live-chat-mode-change-message-renderer,
+html yt-live-chat-viewer-engagement-message-renderer {
+  display: none !important;
+}
+
+/*
+ * If fullscreen chat lives in the normal sidebar, bring that column back so
+ * its header and close button are reachable. It stays hidden in every other
+ * case, and the recommendations inside it remain hidden.
+ */
+html:has(:fullscreen) ytd-watch-flexy #secondary:has(ytd-live-chat-frame),
+html:has(.html5-video-player.ytp-fullscreen) ytd-watch-flexy #secondary:has(ytd-live-chat-frame),
+html ytd-watch-flexy[fullscreen] #secondary:has(ytd-live-chat-frame),
+html ytd-watch-flexy.is-fullscreen #secondary:has(ytd-live-chat-frame),
+html ytd-watch-flexy.fullscreen #secondary:has(ytd-live-chat-frame) {
+  display: block !important;
 }
 
 /* Let the video use the space that the sidebar used to occupy. */
