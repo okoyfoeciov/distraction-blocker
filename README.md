@@ -29,7 +29,7 @@ If a YouTube tab was already open while you installed the extension, refresh tha
 ## How it works
 
 - `rules.json` contains static `declarativeNetRequest` rules that redirect Substack, Facebook, and voz.vn navigations to local block screens. The sites themselves never get a chance to render.
-- `background.js` maintains a dynamic `declarativeNetRequest` rule for Hacker News. A Chrome alarm wakes at 10:00 and 06:00 local time, adds or removes the rule, and schedules the next transition.
+- `background.js` mirrors the always-on rules as dynamic rules when the extension starts, so edits take effect as soon as the extension is reloaded. It also maintains a dynamic rule for Hacker News: a Chrome alarm wakes at 10:00 and 06:00 local time, adds or removes the rule, and schedules the next transition.
 - `content.css` removes the right-hand sidebar, live chat messages, and the chat composer from YouTube, while leaving the chat header's close button reachable in fullscreen.
 - `live-chat.css` blanks the standalone pop-out chat window.
 - There is no JavaScript running on blocked sites, and no saved state.
@@ -41,7 +41,7 @@ The Hacker News schedule uses the browser's local time zone. The block window is
 - For an always-blocked site, add a rule to `rules.json` following the Substack example.
 - For a scheduled site, add a rule and schedule logic to `background.js`.
 - In both cases, add the domain to `host_permissions` in `manifest.json`.
-- Reload the extension on `chrome://extensions`.
+- Reload the extension on `chrome://extensions`. No browser restart is needed.
 
 The current block screens name their sites specifically. To use another site name, copy `blocked.html` and `blocked.css` or make the message generic.
 
@@ -55,7 +55,7 @@ There is no in-extension switch. To disable it, use the on/off switch for the ex
 | --- | --- |
 | `manifest.json` | Chrome extension manifest (Manifest V3) |
 | `rules.json` | Always-on site blocklist |
-| `background.js` | Hacker News schedule and dynamic redirect rule |
+| `background.js` | Always-on rule mirror, Hacker News schedule, and dynamic redirect rules |
 | `blocked.html` / `blocked.css` | The local “Substack has been blocked” screen |
 | `blocked-facebook.html` | The local “Facebook has been blocked” screen |
 | `blocked-voz.html` | The local “voz.vn has been blocked” screen |
@@ -70,4 +70,4 @@ There is no in-extension switch. To disable it, use the on/off switch for the ex
 - It collects no data and makes no external requests.
 - It does not hide the YouTube home feed, Shorts, or end-screen suggestions; its scope is the right-hand column and live chat on video pages.
 - In fullscreen, YouTube may reserve space for chat even though its messages are hidden. Use the X in the chat header to close it and let the video fill the screen.
-- If you edit the files, click the reload button for the extension on `chrome://extensions` and refresh any open tabs.
+- If you edit the files, click the reload button for the extension on `chrome://extensions` and refresh any open tabs. Refresh any tab that was already showing a newly blocked site, since redirects only apply to new navigations.

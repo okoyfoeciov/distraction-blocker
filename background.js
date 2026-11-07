@@ -5,6 +5,14 @@ const HACKER_NEWS_ALARM = "hacker-news-schedule";
 const BLOCK_START_HOUR = 10;
 const BLOCK_END_HOUR = 6;
 
+/**
+ * Dynamic mirrors of the static rules in rules.json. Chrome can keep serving
+ * a stale static ruleset after an extension reload, but dynamic rule updates
+ * take effect immediately.
+ */
+const ALWAYS_BLOCKED_RULE_ID_MIN = 10000;
+const ALWAYS_BLOCKED_RULE_ID_MAX = 10999;
+
 const HACKER_NEWS_RULE = {
   id: HACKER_NEWS_RULE_ID,
   priority: 1,
@@ -19,6 +27,33 @@ const HACKER_NEWS_RULE = {
     resourceTypes: ["main_frame"],
   },
 };
+
+async function loadAlwaysBlockedRules() {
+  const response = await fetch(chrome.runtime.getURL("rules.json"), {
+    cache: "no-store",
+  });
+  const rules = await response.json();
+
+  return rules.map((rule) => ({
+    ...rule,
+    id: ALWAYS_BLOCKED_RULE_ID_MIN + rule.id,
+  }));
+}
+
+async function syncAlwaysBlockedRules() {
+  const rules = await loadAlwaysBlockedRules();
+  const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+  const mirroredRuleIds = dynamicRules
+    .map((rule) => rule.id)
+    .filter(
+      (id) => id >= ALWAYS_BLOCKED_RULE_ID_MIN && id <= ALWAYS_BLOCKED_RULE_ID_MAX,
+    );
+
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: mirroredRuleIds,
+    addRules: rules,
+  });
+}
 
 /**
  * The window is [10:00, 06:00) in the browser's local time zone, wrapping
@@ -104,4 +139,5 @@ chrome.alarms.onAlarm.addListener((alarm) => {
   }
 });
 
+void syncAlwaysBlockedRules();
 void syncHackerNews();
