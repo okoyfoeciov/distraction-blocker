@@ -11,9 +11,10 @@ A deliberately minimal Chrome extension for cutting distracting sites out of you
 - **voz.vn** — `voz.vn` and every subdomain are redirected to a local block screen that says **“voz.vn has been blocked.”**
 - **Hacker News** — `news.ycombinator.com` is blocked every day from **10:00 to 05:59 local time**. Visiting it shows **“Hacker News has been blocked.”**
 - **YouTube recommendations** — the entire right-hand column is removed on video watch pages, including recommended videos, playlists, and transcripts.
+- **YouTube comments** — the comment section below the video is hidden.
 - **YouTube live chat** — live chat messages and the composer are hidden on live streams and premieres. The separate pop-out chat window is fully blanked. In fullscreen, the chat header stays visible so its close button can collapse the chat and let the video fill the screen.
 
-Home pages, search results, subscriptions, comments, and the video player on YouTube are left alone.
+Home pages, search results, subscriptions, and the video player on YouTube are left alone.
 
 ## Install
 
@@ -31,7 +32,7 @@ If a YouTube tab was already open while you installed the extension, refresh tha
 - `rules.json` contains static `declarativeNetRequest` rules that redirect Substack, Facebook, and voz.vn navigations to local block screens. The sites themselves never get a chance to render.
 - `background.js` mirrors the always-on rules as dynamic rules when the extension starts, so edits take effect as soon as the extension is reloaded. It also maintains a dynamic rule for Hacker News: a Chrome alarm wakes at 10:00 and 06:00 local time, adds or removes the rule, and schedules the next transition.
 - `block-sites.js` runs at document start on blocked domains and redirects pages that a site's service worker serves from its cache, which network-level rules cannot intercept.
-- `content.css` removes the right-hand sidebar, live chat messages, and the chat composer from YouTube, while leaving the chat header's close button reachable in fullscreen.
+- `content.css` removes the right-hand sidebar, the comments section, live chat messages, and the chat composer from YouTube, while leaving the chat header's close button reachable in fullscreen.
 - `live-chat.css` blanks the standalone pop-out chat window.
 - The only script that runs on a blocked site is `block-sites.js`, which immediately redirects to the local block screen. No page content is read.
 
@@ -63,7 +64,7 @@ There is no in-extension switch. To disable it, use the on/off switch for the ex
 | `blocked-facebook.html` | The local “Facebook has been blocked” screen |
 | `blocked-voz.html` | The local “voz.vn has been blocked” screen |
 | `blocked-hacker-news.html` | The local “Hacker News has been blocked” screen |
-| `content.css` | Removes YouTube's right sidebar, live chat messages, and chat composer |
+| `content.css` | Removes YouTube's right sidebar, comments, live chat messages, and chat composer |
 | `live-chat.css` | Blanks the standalone YouTube pop-out chat window |
 | `icons/` | Extension icons |
 
@@ -72,6 +73,6 @@ There is no in-extension switch. To disable it, use the on/off switch for the ex
 - The extension requests host access to Substack, Facebook, voz.vn, and Hacker News so it can intercept those navigations.
 - It collects no data and makes no external requests.
 - Some sites, including voz.vn, register a service worker that can serve cached pages without a network request. Network-level redirect rules never see those navigations, so `block-sites.js` handles them.
-- It does not hide the YouTube home feed, Shorts, or end-screen suggestions; its scope is the right-hand column and live chat on video pages.
+- It does not hide the YouTube home feed, Shorts, or end-screen suggestions; its scope is the right-hand column, comments, and live chat on video pages.
 - In fullscreen, YouTube may reserve space for chat even though its messages are hidden. Use the X in the chat header to close it and let the video fill the screen.
 - If you edit the files, click the reload button for the extension on `chrome://extensions` and refresh any open tabs. Refresh any tab that was already showing a newly blocked site, since redirects only apply to new navigations.

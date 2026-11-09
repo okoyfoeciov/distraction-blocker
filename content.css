@@ -1,14 +1,15 @@
 /*
- * YouTube Sidebar + Live Chat Blocker
- * -----------------------------------
+ * YouTube Sidebar + Comments + Live Chat Blocker
+ * ------------------------------------------------
  * Always on. No popup, no settings, no off switch.
  *
  * The entire right-hand column is removed on watch pages so there is no
  * recommendation rail, no "Up next" list, and no empty gap where it used
- * to be. Live chat messages and the composer are removed, and the standalone
- * pop-out chat window is blanked. In fullscreen the chat header is kept so
- * its close button can collapse the empty chat panel. Home, search,
- * subscriptions, comments and the player itself are left alone.
+ * to be. The comments section below the video is removed. Live chat messages
+ * and the composer are removed, and the standalone pop-out chat window is
+ * blanked. In fullscreen the chat header is kept so its close button can
+ * collapse the empty chat panel. Home, search, subscriptions and the player
+ * itself are left alone.
  */
 
 /* Remove the right-hand column and any watch-page recommendation rail. */
@@ -16,6 +17,13 @@ html ytd-watch-flexy #secondary,
 html ytd-watch-flexy #related,
 html ytd-watch-flexy ytd-watch-next-secondary-results-renderer,
 html #watch-related {
+  display: none !important;
+}
+
+/* Remove the comments section below the video. */
+html ytd-watch-flexy ytd-comments#comments,
+html ytd-watch-flexy ytd-comments,
+html ytd-watch-flexy #comments {
   display: none !important;
 }
 
