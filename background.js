@@ -1,9 +1,12 @@
 "use strict";
 
+importScripts("schedule.js");
+
 const HACKER_NEWS_RULE_ID = 1001;
+const SUBSTACK_RULE_ID = 1002;
+const SUBSTACK_ALLOW_RULE_ID = 1003;
 const HACKER_NEWS_ALARM = "hacker-news-schedule";
-const BLOCK_START_HOUR = 10;
-const BLOCK_END_HOUR = 6;
+const SUBSTACK_ALARM = "substack-schedule";
 
 /**
  * Dynamic mirrors of the static rules in rules.json. Chrome can keep serving
@@ -27,6 +30,52 @@ const HACKER_NEWS_RULE = {
     resourceTypes: ["main_frame"],
   },
 };
+
+const SUBSTACK_RULE = {
+  id: SUBSTACK_RULE_ID,
+  priority: 2,
+  action: {
+    type: "redirect",
+    redirect: {
+      extensionPath: "/blocked.html",
+    },
+  },
+  condition: {
+    urlFilter: "||substack.com^",
+    resourceTypes: ["main_frame"],
+  },
+};
+
+/**
+ * A higher-priority allow rule keeps Substack available outside its block
+ * window, even if Chrome is still serving an older static redirect after a
+ * reload.
+ */
+const SUBSTACK_ALLOW_RULE = {
+  id: SUBSTACK_ALLOW_RULE_ID,
+  priority: 2,
+  action: {
+    type: "allow",
+  },
+  condition: {
+    urlFilter: "||substack.com^",
+    resourceTypes: ["main_frame"],
+  },
+};
+
+const SCHEDULES = [
+  {
+    alarm: HACKER_NEWS_ALARM,
+    hours: HACKER_NEWS_HOURS,
+    blockRule: HACKER_NEWS_RULE,
+  },
+  {
+    alarm: SUBSTACK_ALARM,
+    hours: SUBSTACK_HOURS,
+    blockRule: SUBSTACK_RULE,
+    allowRule: SUBSTACK_ALLOW_RULE,
+  },
+];
 
 async function loadAlwaysBlockedRules() {
   const response = await fetch(chrome.runtime.getURL("rules.json"), {
@@ -55,69 +104,44 @@ async function syncAlwaysBlockedRules() {
   });
 }
 
-/**
- * The window is [10:00, 06:00) in the browser's local time zone, wrapping
- * past midnight.
- */
-function isBlockWindow(date = new Date()) {
-  const hour = date.getHours();
-
-  if (BLOCK_START_HOUR < BLOCK_END_HOUR) {
-    return hour >= BLOCK_START_HOUR && hour < BLOCK_END_HOUR;
-  }
-
-  return hour >= BLOCK_START_HOUR || hour < BLOCK_END_HOUR;
-}
-
-/**
- * Find the next time the block state should change.
- */
-function nextTransition(from = new Date()) {
-  const candidates = [];
-
-  for (const dayOffset of [0, 1]) {
-    for (const hour of [BLOCK_START_HOUR, BLOCK_END_HOUR]) {
-      const candidate = new Date(from);
-      candidate.setDate(candidate.getDate() + dayOffset);
-      candidate.setHours(hour, 0, 0, 0);
-
-      if (candidate.getTime() > from.getTime()) {
-        candidates.push(candidate);
-      }
-    }
-  }
-
-  candidates.sort((a, b) => a.getTime() - b.getTime());
-  return candidates[0];
-}
-
-async function scheduleNextTransition(now) {
-  const next = nextTransition(now);
-  await chrome.alarms.create(HACKER_NEWS_ALARM, { when: next.getTime() });
-}
-
 let syncInProgress = null;
 
-function syncHackerNews(now = new Date()) {
+function syncScheduledRules(now = new Date()) {
   if (syncInProgress) return syncInProgress;
 
   syncInProgress = (async () => {
-    const shouldBlock = isBlockWindow(now);
-    const rules = await chrome.declarativeNetRequest.getDynamicRules();
-    const ruleExists = rules.some((rule) => rule.id === HACKER_NEWS_RULE_ID);
+    const dynamicRules = await chrome.declarativeNetRequest.getDynamicRules();
+    const existingRuleIds = new Set(dynamicRules.map((rule) => rule.id));
+    const addRules = [];
+    const removeRuleIds = [];
 
-    if (shouldBlock && !ruleExists) {
+    for (const { hours, blockRule, allowRule } of SCHEDULES) {
+      const shouldBlock = isWithinBlockWindow(hours, now);
+      const desiredRuleId = shouldBlock ? blockRule.id : allowRule?.id;
+      const rules = allowRule ? [blockRule, allowRule] : [blockRule];
+
+      for (const rule of rules) {
+        if (rule.id === desiredRuleId) {
+          if (!existingRuleIds.has(rule.id)) {
+            addRules.push(rule);
+          }
+        } else if (existingRuleIds.has(rule.id)) {
+          removeRuleIds.push(rule.id);
+        }
+      }
+    }
+
+    if (addRules.length > 0 || removeRuleIds.length > 0) {
       await chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: [HACKER_NEWS_RULE_ID],
-        addRules: [HACKER_NEWS_RULE],
-      });
-    } else if (!shouldBlock && ruleExists) {
-      await chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: [HACKER_NEWS_RULE_ID],
+        removeRuleIds,
+        addRules,
       });
     }
 
-    await scheduleNextTransition(now);
+    for (const { alarm, hours } of SCHEDULES) {
+      const next = nextWindowTransition(hours, now);
+      await chrome.alarms.create(alarm, { when: next.getTime() });
+    }
   })().finally(() => {
     syncInProgress = null;
   });
@@ -126,18 +150,18 @@ function syncHackerNews(now = new Date()) {
 }
 
 chrome.runtime.onInstalled.addListener(() => {
-  void syncHackerNews();
+  void syncScheduledRules();
 });
 
 chrome.runtime.onStartup.addListener(() => {
-  void syncHackerNews();
+  void syncScheduledRules();
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === HACKER_NEWS_ALARM) {
-    void syncHackerNews();
+  if (SCHEDULES.some((schedule) => schedule.alarm === alarm.name)) {
+    void syncScheduledRules();
   }
 });
 
 void syncAlwaysBlockedRules();
-void syncHackerNews();
+void syncScheduledRules();
