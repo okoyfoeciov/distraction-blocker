@@ -5,7 +5,7 @@
  * start is later than end it wraps past midnight.
  */
 const HACKER_NEWS_HOURS = { start: 10, end: 6 };
-const SUBSTACK_HOURS = { start: 6, end: 10 };
+const SUBSTACK_HOURS = { start: 10, end: 6 };
 
 function isWithinBlockWindow(hours, date = new Date()) {
   const hour = date.getHours();

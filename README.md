@@ -6,7 +6,7 @@ A deliberately minimal Chrome extension for cutting distracting sites out of you
 
 ## What it blocks
 
-- **Substack** — `substack.com` and every subdomain are blocked every day from **06:00 to 09:59 local time** and redirected to a local screen that says **“Substack has been blocked.”** Outside that window, Substack loads normally.
+- **Substack** — `substack.com` and every subdomain are blocked every day from **10:00 to 05:59 local time** and redirected to a local screen that says **“Substack has been blocked.”** Outside that window, Substack loads normally.
 - **Facebook** — `facebook.com` and every subdomain are redirected to a local block screen that says **“Facebook has been blocked.”**
 - **voz.vn** — `voz.vn` and every subdomain are redirected to a local block screen that says **“voz.vn has been blocked.”**
 - **Hacker News** — `news.ycombinator.com` is blocked every day from **10:00 to 05:59 local time**. Visiting it shows **“Hacker News has been blocked.”**
@@ -23,7 +23,7 @@ Home pages, search results, subscriptions, and the video player on YouTube are l
 3. Turn on **Developer mode** (top-right).
 4. Click **Load unpacked**.
 5. Select the folder containing this README.
-6. Open any YouTube video, or try visiting Facebook or voz.vn. Substack is blocked from 06:00 to 09:59, and Hacker News from 10:00 to 05:59.
+6. Open any YouTube video, or try visiting Facebook or voz.vn. Substack and Hacker News are blocked from 10:00 to 05:59.
 
 If a YouTube tab was already open while you installed the extension, refresh that tab once.
 
@@ -37,7 +37,7 @@ If a YouTube tab was already open while you installed the extension, refresh tha
 - `live-chat.css` blanks the standalone pop-out chat window.
 - The only scripts that run on the blocked domains are `schedule.js` and `block-sites.js`, which check the hostname and clock. No page content is read.
 
-The Substack and Hacker News schedules use the browser's local time zone. Substack is blocked from 06:00 through 09:59 and loads normally from 10:00 through 05:59. Hacker News is blocked from 10:00 through 05:59 and loads normally from 06:00 through 09:59.
+The Substack and Hacker News schedules use the browser's local time zone. Both are blocked from 10:00 through 05:59 and load normally from 06:00 through 09:59.
 
 ## Adding another site
 
